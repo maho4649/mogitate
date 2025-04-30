@@ -67,6 +67,14 @@ class ProductController extends Controller
      */
     public function store(UpdateProductRequest $request)
     {
+        $request->validate([
+            'name' => 'required|max:255',
+            'price' => 'required|integer',
+            'image' => 'required|image',
+            'description' => 'required',
+        ]);
+         $path = $request->file('image')->store('products', 'public');
+
         $validated = $request->validated();
 
         // 画像アップロード
@@ -103,8 +111,13 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, $productId)
     {
         $product = Product::findOrFail($productId);
-
-       
+        
+        $request->validate([
+            'name' => 'required|max:255',
+            'price' => 'required|integer',
+            'description' => 'required',
+            'image' => 'nullable|image', // 画像は任意
+        ]);
 
         if ($request->hasFile('image')) {
             // 古い画像を削除
